@@ -37,29 +37,18 @@ namespace ExampleMessageBoxTask
             DtStart = DateTime.Now;
         }
 
-        //public DialogResult Show()
-        //{
-        //    CheckIfDisposed();
-
-        //    var w = new Form() { Size = new System.Drawing.Size(0, 0) };
-        //    Task.Delay(TimeSpan.FromSeconds(Timeout))
-        //        .ContinueWith(t => w.Close(), TaskScheduler.FromCurrentSynchronizationContext());
-        //    _result = MessageBox.Show(w, Text, Caption, Buttons, MessageBoxIcon, DefaultButton);
-
-        //    return _result;
-        //}
-
         public DialogResult Show()
         {
             CheckIfDisposed();
 
+            // Задача на отслеживание MessageBox и изменение таймера
             Task.Run(() =>
             {
                 try
                 {
                     IntPtr hWnd;
 
-                    // Приостановить поток. Ждать пока не создастся окно сообщения. Работа перейдёт вниз по коду.
+                    // Ждать окно сообщения. Работа перейдёт вниз по коду.
                     while ((hWnd = UtilsWin32.FindWindow("#32770", Caption)) == IntPtr.Zero)
                     {
                         Thread.Sleep(25);
@@ -71,13 +60,18 @@ namespace ExampleMessageBoxTask
                     // Возобновить поток
                     while (hWnd != IntPtr.Zero)
                     {
+                        // Изменить заголовок
                         UtilsWin32.SendMessage(hWnd, UtilsWin32.MsgConst.WM_SETTEXT, IntPtr.Zero, Caption + @"  [" +
                             (DtStart - DateTime.Now.AddSeconds(-Timeout)).Seconds + @"]");
-                        // @"." + (DtStart - DateTime.Now.AddSeconds(-Timeout)).Milliseconds + @"]");
                         Thread.Sleep(100);
-                        // Выйти по таймеру
+                        // Таймер
                         if (DateTime.Now - DtStart > TimeSpan.FromSeconds(Timeout))
+                        {
+                            // Закрыть окно
+                            UtilsWin32.SendMessage(hWnd, UtilsWin32.MsgConst.WM_CLOSE, IntPtr.Zero, IntPtr.Zero);
+                            // Завершить цикл
                             break;
+                        }
                     }
                 }
                 catch (Exception)
@@ -86,10 +80,14 @@ namespace ExampleMessageBoxTask
                 }
             });
 
-            var w = new Form() { Size = new System.Drawing.Size(0, 0) };
-            Task.Delay(TimeSpan.FromSeconds(Timeout))
-                .ContinueWith(t => w.Close(), TaskScheduler.FromCurrentSynchronizationContext());
-            _result = MessageBox.Show(w, Text, Caption, Buttons, MessageBoxIcon, DefaultButton);
+            // Такой метод, иногда приводит к тому, что MessageBox не всегда отображается
+            //var w = new Form() { Size = new System.Drawing.Size(0, 0) };
+            //Task.Delay(TimeSpan.FromSeconds(Timeout))
+            //    .ContinueWith(t => w.Close(), TaskScheduler.FromCurrentSynchronizationContext());
+            //_result = MessageBox.Show(w, Text, Caption, Buttons, MessageBoxIcon, DefaultButton);
+
+            // Исправление
+            _result = MessageBox.Show(Text, Caption, Buttons, MessageBoxIcon, DefaultButton);
 
             return _result;
 
