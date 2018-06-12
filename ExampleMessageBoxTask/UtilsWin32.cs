@@ -1,5 +1,6 @@
 ﻿// ReSharper disable InconsistentNaming
 using System;
+using System.Drawing;
 using System.Runtime.InteropServices;
 
 namespace ExampleMessageBoxTask
@@ -9,86 +10,130 @@ namespace ExampleMessageBoxTask
         [DllImport("user32.dll", SetLastError = true)]
         public static extern IntPtr FindWindow(string lpClassName, string lpWindowName);
 
-        [DllImport("user32.dll", CharSet = CharSet.Auto)]
+        [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
         public static extern IntPtr SendMessage(IntPtr hWnd, uint msg, IntPtr wParam, IntPtr lParam);
 
-        [DllImport("user32.dll", CharSet = CharSet.Auto)]
+        [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
         public static extern IntPtr SendMessage(IntPtr hWnd, uint msg, IntPtr wParam, string lParam);
+
+        [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool PostMessage(IntPtr hWnd, uint msg, IntPtr wParam, IntPtr lParam);
+
+        [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool PostMessage(IntPtr hWnd, uint msg, uint wParam, uint lParam);
+
+        [DllImport("User32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+        public static extern bool GetWindowRect(IntPtr handle, ref Rect r);
+
+        [DllImport("user32.dll", SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int x, int y, int cx, int cy, uint uFlags);
+
+        public static IntPtr MakeLParam(int x, int y)
+        {
+            return (IntPtr)((y << 16) | (x & 0xffff));
+        }
+
+        // https://msdn.microsoft.com/ru-ru/library/windows/desktop/ms633545(v=vs.85).aspx
+        public static class SetWindowPosConst
+        {
+            public static IntPtr HWND_NOTOPMOST = new IntPtr(-2);
+            public static IntPtr HWND_TOPMOST = new IntPtr(-1);
+            public static IntPtr HWND_TOP = new IntPtr(0);
+            public static IntPtr HWND_BOTTOM = new IntPtr(1);
+
+            public const uint SWP_ASYNCWINDOWPOS = 0x4000;
+            public const uint SWP_DEFERERASE = 0x2000;
+            public const uint SWP_DRAWFRAME = 0x0020;
+            public const uint SWP_FRAMECHANGED = 0x0020;
+            public const uint SWP_HIDEWINDOW = 0x0080;
+            public const uint SWP_NOACTIVATE = 0x0010;
+            public const uint SWP_NOCOPYBITS = 0x0100;
+            public const uint SWP_NOMOVE = 0x0002;
+            public const uint SWP_NOOWNERZORDER = 0x0200;
+            public const uint SWP_NOREDRAW = 0x0008;
+            public const uint SWP_NOREPOSITION = 0x0200;
+            public const uint SWP_NOSENDCHANGING = 0x0400;
+            public const uint SWP_NOSIZE = 0x0001;
+            public const uint SWP_NOZORDER = 0x0004;
+            public const uint SWP_SHOWWINDOW = 0x0040;
+        }
 
         // https://autohotkey.com/docs/misc/SendMessageList.htm
         public static class MsgConst
         {
-            public const uint WM_NULL = 0x00;
-            public const uint WM_CREATE = 0x01;
-            public const uint WM_DESTROY = 0x02;
-            public const uint WM_MOVE = 0x03;
-            public const uint WM_SIZE = 0x05;
-            public const uint WM_ACTIVATE = 0x06;
-            public const uint WM_SETFOCUS = 0x07;
-            public const uint WM_KILLFOCUS = 0x08;
-            public const uint WM_ENABLE = 0x0A;
-            public const uint WM_SETREDRAW = 0x0B;
-            public const uint WM_SETTEXT = 0x000C;
-            public const uint WM_GETTEXT = 0x0D;
-            public const uint WM_GETTEXTLENGTH = 0x0E;
-            public const uint WM_PAINT = 0x0F;
-            public const uint WM_CLOSE = 0x10;
-            public const uint WM_QUERYENDSESSION = 0x11;
-            public const uint WM_QUIT = 0x12;
-            public const uint WM_QUERYOPEN = 0x13;
-            public const uint WM_ERASEBKGND = 0x14;
-            public const uint WM_SYSCOLORCHANGE = 0x15;
-            public const uint WM_ENDSESSION = 0x16;
-            public const uint WM_SYSTEMERROR = 0x17;
-            public const uint WM_SHOWWINDOW = 0x18;
-            public const uint WM_CTLCOLOR = 0x19;
-            public const uint WM_WININICHANGE = 0x1A;
-            public const uint WM_SETTINGCHANGE = 0x1A;
-            public const uint WM_DEVMODECHANGE = 0x1B;
-            public const uint WM_ACTIVATEAPP = 0x1C;
-            public const uint WM_FONTCHANGE = 0x1D;
-            public const uint WM_TIMECHANGE = 0x1E;
-            public const uint WM_CANCELMODE = 0x1F;
-            public const uint WM_SETCURSOR = 0x20;
-            public const uint WM_MOUSEACTIVATE = 0x21;
-            public const uint WM_CHILDACTIVATE = 0x22;
-            public const uint WM_QUEUESYNC = 0x23;
-            public const uint WM_GETMINMAXINFO = 0x24;
-            public const uint WM_PAINTICON = 0x26;
-            public const uint WM_ICONERASEBKGND = 0x27;
-            public const uint WM_NEXTDLGCTL = 0x28;
-            public const uint WM_SPOOLERSTATUS = 0x2A;
-            public const uint WM_DRAWITEM = 0x2B;
-            public const uint WM_MEASUREITEM = 0x2C;
-            public const uint WM_DELETEITEM = 0x2D;
-            public const uint WM_VKEYTOITEM = 0x2E;
-            public const uint WM_CHARTOITEM = 0x2F;
-
-            public const uint WM_SETFONT = 0x30;
-            public const uint WM_GETFONT = 0x31;
-            public const uint WM_SETHOTKEY = 0x32;
-            public const uint WM_GETHOTKEY = 0x33;
-            public const uint WM_QUERYDRAGICON = 0x37;
-            public const uint WM_COMPAREITEM = 0x39;
-            public const uint WM_COMPACTING = 0x41;
-            public const uint WM_WINDOWPOSCHANGING = 0x46;
-            public const uint WM_WINDOWPOSCHANGED = 0x47;
-            public const uint WM_POWER = 0x48;
-            public const uint WM_COPYDATA = 0x4A;
-            public const uint WM_CANCELJOURNAL = 0x4B;
-            public const uint WM_NOTIFY = 0x4E;
-            public const uint WM_INPUTLANGCHANGEREQUEST = 0x50;
-            public const uint WM_INPUTLANGCHANGE = 0x51;
-            public const uint WM_TCARD = 0x52;
-            public const uint WM_HELP = 0x53;
-            public const uint WM_USERCHANGED = 0x54;
-            public const uint WM_NOTIFYFORMAT = 0x55;
-            public const uint WM_CONTEXTMENU = 0x7B;
-            public const uint WM_STYLECHANGING = 0x7C;
-            public const uint WM_STYLECHANGED = 0x7D;
-            public const uint WM_DISPLAYCHANGE = 0x7E;
-            public const uint WM_GETICON = 0x7F;
-            public const uint WM_SETICON = 0x80;
+                        public const uint WM_NULL                   = 0x0000;
+            public const uint WM_CREATE                 = 0x0001;
+            public const uint WM_DESTROY                = 0x0002;
+            public const uint WM_MOVE                   = 0x0003;
+            public const uint WM_SIZE                   = 0x0005;
+            public const uint WM_ACTIVATE               = 0x0006;
+            public const uint WM_SETFOCUS               = 0x0007;
+            public const uint WM_KILLFOCUS              = 0x0008;
+            public const uint WM_ENABLE                 = 0x000A;
+            public const uint WM_SETREDRAW              = 0x000B;
+            public const uint WM_SETTEXT                = 0x000C;
+            public const uint WM_GETTEXT                = 0x000D;
+            public const uint WM_GETTEXTLENGTH          = 0x000E;
+            public const uint WM_PAINT                  = 0x000F;
+            public const uint WM_CLOSE                  = 0x0010;
+            public const uint WM_QUERYENDSESSION        = 0x0011;
+            public const uint WM_QUIT                   = 0x0012;
+            public const uint WM_QUERYOPEN              = 0x0013;
+            public const uint WM_ERASEBKGND             = 0x0014;
+            public const uint WM_SYSCOLORCHANGE         = 0x0015;
+            public const uint WM_ENDSESSION             = 0x0016;
+            public const uint WM_SYSTEMERROR            = 0x0017;
+            public const uint WM_SHOWWINDOW             = 0x0018;
+            public const uint WM_CTLCOLOR               = 0x0019;
+            public const uint WM_WININICHANGE           = 0x001A;
+            public const uint WM_SETTINGCHANGE          = 0x001A;
+            public const uint WM_DEVMODECHANGE          = 0x001B;
+            public const uint WM_ACTIVATEAPP            = 0x001C;
+            public const uint WM_FONTCHANGE             = 0x001D;
+            public const uint WM_TIMECHANGE             = 0x001E;
+            public const uint WM_CANCELMODE             = 0x001F;
+            public const uint WM_SETCURSOR              = 0x0020;
+            public const uint WM_MOUSEACTIVATE          = 0x0021;
+            public const uint WM_CHILDACTIVATE          = 0x0022;
+            public const uint WM_QUEUESYNC              = 0x0023;
+            public const uint WM_GETMINMAXINFO          = 0x0024;
+            public const uint WM_PAINTICON              = 0x0026;
+            public const uint WM_ICONERASEBKGND         = 0x0027;
+            public const uint WM_NEXTDLGCTL             = 0x0028;
+            public const uint WM_SPOOLERSTATUS          = 0x002A;
+            public const uint WM_DRAWITEM               = 0x002B;
+            public const uint WM_MEASUREITEM            = 0x002C;
+            public const uint WM_DELETEITEM             = 0x002D;
+            public const uint WM_VKEYTOITEM             = 0x002E;
+            public const uint WM_CHARTOITEM             = 0x002F;
+            public const uint WM_SETFONT                = 0x0030;
+            public const uint WM_GETFONT                = 0x0031;
+            public const uint WM_SETHOTKEY              = 0x0032;
+            public const uint WM_GETHOTKEY              = 0x0033;
+            public const uint WM_QUERYDRAGICON          = 0x0037;
+            public const uint WM_COMPAREITEM            = 0x0039;
+            public const uint WM_COMPACTING             = 0x0041;
+            public const uint WM_WINDOWPOSCHANGING      = 0x0046;
+            public const uint WM_WINDOWPOSCHANGED       = 0x0047;
+            public const uint WM_POWER                  = 0x0048;
+            public const uint WM_COPYDATA               = 0x004A;
+            public const uint WM_CANCELJOURNAL          = 0x004B;
+            public const uint WM_NOTIFY                 = 0x004E;
+            public const uint WM_INPUTLANGCHANGEREQUEST = 0x0050;
+            public const uint WM_INPUTLANGCHANGE        = 0x0051;
+            public const uint WM_TCARD                  = 0x0052;
+            public const uint WM_HELP                   = 0x0053;
+            public const uint WM_USERCHANGED            = 0x0054;
+            public const uint WM_NOTIFYFORMAT           = 0x0055;
+            public const uint WM_CONTEXTMENU            = 0x007B;
+            public const uint WM_STYLECHANGING          = 0x007C;
+            public const uint WM_STYLECHANGED           = 0x007D;
+            public const uint WM_DISPLAYCHANGE          = 0x007E;
+            public const uint WM_GETICON                = 0x007F;
+            public const uint WM_SETICON                = 0x0080;
 
             public const uint WM_NCCREATE = 0x81;
             public const uint WM_NCDESTROY = 0x82;
@@ -241,6 +286,18 @@ namespace ExampleMessageBoxTask
 
             public const uint WM_USER = 0x400;
             public const uint WM_APP = 0x8000;
+        }
+
+        /// <summary>
+        /// Прямоуголная область
+        /// </summary>
+        [StructLayout(LayoutKind.Sequential)]
+        public struct Rect
+        {
+            public int left;
+            public int top;
+            public int right;
+            public int bottom;
         }
 
     }

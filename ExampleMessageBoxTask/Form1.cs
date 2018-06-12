@@ -161,7 +161,7 @@ namespace ExampleMessageBoxTask
             using (var messageBoxTask = new UtilsMessageBoxTask(GetMessage(), Application.ProductName,
                 GetTimeOut(), GetButtons(), GetIcons(), GetDefaultButtons()))
             {
-                messageBoxTask.Show();
+                messageBoxTask.Show(this);
             }
         }
     }
