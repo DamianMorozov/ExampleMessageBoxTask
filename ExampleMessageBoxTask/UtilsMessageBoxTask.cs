@@ -89,9 +89,9 @@ namespace ExampleMessageBoxTask
                         }
                     }
                 }
-                catch (Exception exception)
+                catch (Exception)
                 {
-                    MessageBox.Show(exception.Message);
+                    //
                 }
             });
 
