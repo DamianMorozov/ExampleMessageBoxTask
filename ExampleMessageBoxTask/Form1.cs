@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows.Forms;
+using UFFF.Win;
 
 namespace ExampleMessageBoxTask
 {
@@ -156,7 +157,7 @@ namespace ExampleMessageBoxTask
             return defaultButtons;
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void Button1_Click(object sender, EventArgs e)
         {
             using (var messageBoxTask = new UtilsMessageBoxTask(GetMessage(), Application.ProductName,
                 GetTimeOut(), GetButtons(), GetIcons(), GetDefaultButtons()))

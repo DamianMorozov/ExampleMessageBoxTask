@@ -1,9 +1,9 @@
-﻿// ReSharper disable InconsistentNaming
-using System;
-using System.Drawing;
+﻿using System;
 using System.Runtime.InteropServices;
+// ReSharper disable InconsistentNaming
+// ReSharper disable CheckNamespace
 
-namespace ExampleMessageBoxTask
+namespace UFFF.Win
 {
     public static class UtilsWin32
     {
@@ -64,7 +64,7 @@ namespace ExampleMessageBoxTask
         // https://autohotkey.com/docs/misc/SendMessageList.htm
         public static class MsgConst
         {
-                        public const uint WM_NULL                   = 0x0000;
+            public const uint WM_NULL                   = 0x0000;
             public const uint WM_CREATE                 = 0x0001;
             public const uint WM_DESTROY                = 0x0002;
             public const uint WM_MOVE                   = 0x0003;
@@ -288,9 +288,6 @@ namespace ExampleMessageBoxTask
             public const uint WM_APP = 0x8000;
         }
 
-        /// <summary>
-        /// Прямоуголная область
-        /// </summary>
         [StructLayout(LayoutKind.Sequential)]
         public struct Rect
         {
@@ -299,6 +296,5 @@ namespace ExampleMessageBoxTask
             public int right;
             public int bottom;
         }
-
     }
 }

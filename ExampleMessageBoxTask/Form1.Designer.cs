@@ -45,18 +45,18 @@
             // button1
             // 
             this.button1.Location = new System.Drawing.Point(10, 160);
-            this.button1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.button1.Margin = new System.Windows.Forms.Padding(4);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(323, 28);
             this.button1.TabIndex = 2;
             this.button1.Text = "Create MessageBoxTask";
             this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.button1.Click += new System.EventHandler(this.Button1_Click);
             // 
             // fieldTimeout
             // 
             this.fieldTimeout.Location = new System.Drawing.Point(170, 10);
-            this.fieldTimeout.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.fieldTimeout.Margin = new System.Windows.Forms.Padding(4);
             this.fieldTimeout.Maximum = new decimal(new int[] {
             120,
             0,
@@ -196,7 +196,7 @@
             this.Controls.Add(this.button1);
             this.Font = new System.Drawing.Font("Courier New", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
-            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.Margin = new System.Windows.Forms.Padding(4);
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "Form1";
